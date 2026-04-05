@@ -1,4 +1,5 @@
 drop table departments_dup; 
+drop table dept_manager_dup;
 
 create table departments_dup
 (dept_no char(4) null, dept_name varchar(40) null);
@@ -45,6 +46,8 @@ where dept_no = 'd001';
 
 select * from dept_manager_dup
 order by dept_no;
+set @@global.sql_mode := replace(@@global.sql_mode, 'ONLY_FULL_GROUP_BY', '');
+
 
 
 
