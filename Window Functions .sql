@@ -24,3 +24,37 @@ from employees;
 #Using several window functions in a query can get messy, so it's better to only use 
 #window specifications requiring identical partitions 
 
+#alternative syntax, not the most professional 
+select emp_no, salary, 
+row_number() over w as row_num
+from salaries 
+window w as (partition by emp_no order by salary desc); 
+
+#task: Write a query that provides row numbers for all workers from the "employees" table, 
+#partitioning the data by their first names and ordering each partition by their employee number in ascending order.
+select emp_no, first_name, last_name, 
+row_number() over w as row_num
+from employees 
+window w as (partition by first_name order by emp_no); 
+
+use employees;
+#partition by vs group by
+select a.emp_no, max(salary) as max_salary from (
+	select emp_no, salary from salaries) a 
+    group by emp_no;
+
+select a.emp_no, 
+a.salary as max_salary from (
+	select emp_no, salary, row_number() over w as row_num
+    from salaries 
+    window w as (partition by emp_no order by salary desc)) a 
+where a.row_num = 1;
+
+#Find out the lowest salary value each employee has ever signed a contract for. To obtain the desired output, use a subquery containing a window function, as well as a window specification introduced with the help of the WINDOW keyword.
+select a.emp_no, 
+min(salary) as min_salary from (
+	select emp_no, salary, row_number() over w as row_num
+    from salaries 
+    window w as (partition by emp_no order by salary)) a 
+group by emp_no;
+
